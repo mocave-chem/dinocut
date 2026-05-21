@@ -186,6 +186,1146 @@
                     <span class="text-7xl animate-pulse select-none">🦖</span>
                 </div>
 
+                <h2 class="text-2xl md:text-3xl font-extrabold text-amber-400 uppercase tracking-tight mb-2">세계 공룡의 날 네컷 🦖</h2>
+                <p class="text-gray-300 text-xs md:text-sm max-w-sm mx-auto mb-6 leading-relaxed">
+                    스마트폰이나 PC 카메라를 활성화하여 왜곡 없는 4:3 모범 비율의 멋진 스냅샷을 촬영하고 동아리 기념 앨범을 인화해 보세요!
+                </p>
+
+                <div class="space-y-4">
+                    <button onclick="startPhotobooth()" class="group relative px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-500 text-black font-extrabold text-lg rounded-xl shadow-xl hover:from-amber-500 hover:to-yellow-400 transition-all duration-300 transform active:scale-95 w-full md:w-auto">
+                        <span class="relative z-10 flex items-center justify-center gap-2">
+                            🦕 탐사 시작 (카메라 연결)
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: Camera Feed & Real-time Live Preview Grid -->
+        <section id="screen-workspace" class="hidden w-full flex flex-col lg:flex-row gap-5 items-stretch">
+            
+            <!-- Left Workspace: Active Camera Feed Controller -->
+            <div class="flex-1 bg-stone-900 border border-stone-800 rounded-2xl p-4 md:p-5 shadow-2xl flex flex-col justify-between relative">
+                <div>
+                    <div class="flex justify-between items-center mb-3 bg-stone-950 p-2.5 rounded-lg border border-stone-800">
+                        <div class="flex items-center space-x-1.5">
+                            <span id="rec-dot" class="w-2.5 h-2.5 bg-red-600 rounded-full pulse-red hidden"></span>
+                            <span id="cam-status-label" class="text-xs font-mono font-bold tracking-wider text-amber-500">CAMERA STREAM</span>
+                        </div>
+                        <div class="text-[10px] font-mono text-gray-500">
+                            CAM: <span id="camera-mode-tag" class="text-yellow-500">CONNECTING...</span>
+                        </div>
+                    </div>
+
+                    <!-- Video / Canvas Feed Viewport -->
+                    <div class="relative aspect-[4/3] rounded-xl bg-black border border-stone-800 overflow-hidden shadow-inner flex items-center justify-center">
+                        <video id="webcam-view" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover z-10 mirror-x hidden"></video>
+                        <canvas id="virtual-cam-canvas" class="absolute inset-0 w-full h-full object-cover z-10 hidden"></canvas>
+
+                        <!-- Sci-Fi HUD Overlay -->
+                        <div class="absolute inset-0 border-2 border-red-900/20 pointer-events-none z-20"></div>
+                        <div class="absolute top-3 left-3 z-20 bg-black/70 text-[9px] text-green-400 font-mono p-1.5 rounded border border-green-500/20 leading-tight">
+                            LOC: CRETACEOUS SECTOR<br>
+                            TARGET: EXPEDITION M-4
+                        </div>
+                        
+                        <!-- Shutter flash animation layer -->
+                        <div id="camera-flash" class="absolute inset-0 pointer-events-none z-30 opacity-0 bg-white"></div>
+
+                        <!-- 5s Countdown overlay -->
+                        <div id="countdown-overlay" class="absolute inset-0 flex items-center justify-center bg-black/60 z-30 hidden">
+                            <span id="countdown-text" class="text-7xl md:text-8xl font-black text-amber-500 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">5</span>
+                        </div>
+
+                        <!-- Device authorization / Error Guide Container -->
+                        <div id="camera-prompt" class="absolute inset-0 flex flex-col items-center justify-center bg-stone-950/95 z-20 p-6 text-center overflow-y-auto">
+                            <!-- Injected dynamically based on connection status -->
+                            <span class="text-4xl mb-2 animate-bounce">📸</span>
+                            <h4 class="text-sm font-bold text-amber-400 mb-1">카메라 승인 요청 중</h4>
+                            <p class="text-[11px] text-gray-400 max-w-xs mb-4">브라우저 상단 또는 모바일 화면에 카메라 허용 요청이 뜨면 승인해 주세요.</p>
+                            <button onclick="enableVirtualCamera()" class="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-xs text-amber-500 font-mono rounded border border-amber-600/30">가상 카메라로 우선 진행</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capture Buttons -->
+                <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                    <button id="btn-shoot-all" onclick="triggerAutoSequence()" class="flex-grow py-3.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold text-base rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 border-b-4 border-red-900">
+                        <span>📸 연속 촬영 시작 (4장)</span>
+                    </button>
+                    <button onclick="resetCapturedPhotos()" class="px-4 py-3.5 bg-stone-800 hover:bg-stone-700 text-gray-300 text-sm font-bold rounded-xl transition-all border border-stone-700">
+                        초기화
+                    </button>
+                </div>
+
+                <!-- Theme Selection inside Capture Screen (Olive vs Camo Only) -->
+                <div class="mt-4 border-t border-stone-800/60 pt-3">
+                    <label class="block text-[10px] font-mono text-gray-400 mb-1.5 uppercase">CHOOSE FRAME THEME (프레임 선택)</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectFrameTheme('olive')" id="btn-frame-olive" class="frame-tab border-2 border-amber-500 bg-amber-950/20 text-white text-sm py-2.5 rounded-lg font-bold">🦖 국방색 (Olive Green)</button>
+                        <button onclick="selectFrameTheme('camo')" id="btn-frame-camo" class="frame-tab border border-stone-800 bg-stone-950 text-gray-400 text-sm py-2.5 rounded-lg">🪵 카무플라주 (Camouflage)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Workspace: Interactive Four-Cut live preview panel with Dinosaur Characters -->
+            <div class="w-full lg:w-80 bg-stone-900 border border-stone-800 rounded-2xl p-4 md:p-5 shadow-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-amber-500 text-xs tracking-wider mb-3 font-mono">FRAME LIVE PREVIEW</h3>
+                    
+                    <!-- Beautiful Frame Render Box -->
+                    <div class="relative flex justify-center py-2 bg-stone-950 rounded-xl border border-stone-850">
+                        <div id="fourcut-frame-preview" class="w-[190px] bg-[#3a4430] text-amber-500 flex flex-col p-2.5 shadow-xl border-4 border-[#242c1e] transition-all relative overflow-hidden">
+                            
+                            <!-- Static Cute Dinosaur illustrations overlaying the frame preview -->
+                            <div class="absolute top-1 right-1 text-base z-30 select-none animate-bounce">🦕</div>
+                            <div class="absolute bottom-12 left-1.5 text-lg z-30 select-none pointer-events-none">🦖</div>
+                            <div class="absolute bottom-24 right-1 text-xs z-30 select-none opacity-45">🐾</div>
+                            
+                            <div id="theme-hazard-top" class="h-1.5 w-full bg-yellow-500 mb-2 hidden"></div>
+                            
+                            <!-- Photo Slots Grid -->
+                            <div class="space-y-1.5 flex-grow flex flex-col justify-around">
+                                <div class="relative aspect-[4/3] bg-stone-900/80 border border-stone-850 rounded flex items-center justify-center overflow-hidden">
+                                    <img id="cut-preview-0" class="w-full h-full object-cover hidden" alt="컷 1">
+                                    <span id="cut-placeholder-0" class="text-[9px] text-stone-600 font-mono">WAIT FOR SHOT #1</span>
+                                </div>
+                                <div class="relative aspect-[4/3] bg-stone-900/80 border border-stone-850 rounded flex items-center justify-center overflow-hidden">
+                                    <img id="cut-preview-1" class="w-full h-full object-cover hidden" alt="컷 2">
+                                    <span id="cut-placeholder-1" class="text-[9px] text-stone-600 font-mono">WAIT FOR SHOT #2</span>
+                                </div>
+                                <div class="relative aspect-[4/3] bg-stone-900/80 border border-stone-850 rounded flex items-center justify-center overflow-hidden">
+                                    <img id="cut-preview-2" class="w-full h-full object-cover hidden" alt="컷 3">
+                                    <span id="cut-placeholder-2" class="text-[9px] text-stone-600 font-mono">WAIT FOR SHOT #3</span>
+                                </div>
+                                <div class="relative aspect-[4/3] bg-stone-900/80 border border-stone-850 rounded flex items-center justify-center overflow-hidden">
+                                    <img id="cut-preview-3" class="w-full h-full object-cover hidden" alt="컷 4">
+                                    <span id="cut-placeholder-3" class="text-[9px] text-stone-600 font-mono">WAIT FOR SHOT #4</span>
+                                </div>
+                            </div>
+
+                            <!-- Styled bottom logo - Fixed as "세계 공룡의 날🦖" and Subtitle -->
+                            <div class="mt-2 text-center border-t border-amber-600/20 pt-1.5 flex flex-col items-center">
+                                <span id="theme-footer-title" class="font-extrabold text-sm tracking-wider text-amber-500 font-[Black Han Sans] whitespace-nowrap">세계 공룡의 날 🦖</span>
+                                <span id="theme-footer-sub" class="text-[9px] font-medium text-gray-200 mt-0.5 whitespace-nowrap">한들중 과학 자율동아리</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button id="btn-next-step" onclick="goToDecorator()" disabled class="w-full py-3.5 bg-gray-700 text-gray-400 font-extrabold text-sm rounded-xl transition-all cursor-not-allowed flex items-center justify-center gap-1.5">
+                        <span>데코 및 필터 꾸미기 🎨</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: Decorator Screen (Sticker Placement & Filter Controls) -->
+        <section id="screen-decorator" class="hidden w-full max-w-4xl bg-stone-900 border border-stone-800 rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col lg:flex-row gap-5">
+            
+            <!-- Left Controls: Filter Choice & Dinosaur Sticker Grid -->
+            <div class="flex-1 space-y-5">
+                <div>
+                    <h3 class="text-sm font-bold text-amber-500 border-b border-stone-800 pb-1.5 mb-3">🎨 시네마틱 필터 연출</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        <button onclick="applyPhotoFilter('normal')" class="filter-btn bg-stone-800 text-xs py-2 rounded-lg border-2 border-amber-500 text-amber-500 font-bold">원본 컬러</button>
+                        <button onclick="applyPhotoFilter('grayscale')" class="filter-btn bg-stone-950 text-xs py-2 rounded-lg border border-stone-800 text-gray-400">빈티지 흑백</button>
+                        <button onclick="applyPhotoFilter('sepia')" class="filter-btn bg-stone-950 text-xs py-2 rounded-lg border border-stone-800 text-gray-400">클래식 세피아</button>
+                        <button onclick="applyPhotoFilter('jungle')" class="filter-btn bg-stone-950 text-xs py-2 rounded-lg border border-stone-800 text-gray-400">정글 그린</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold text-amber-500 border-b border-stone-800 pb-1.5 mb-2">🦖 데코 스티커 붙이기 (모바일 지원)</h3>
+                    <p class="text-[11px] text-gray-400 mb-3">스티커를 탭하면 보드 위에 생성됩니다. 손가락이나 마우스로 드래그하여 위치를 조정하세요!</p>
+                    
+                    <div class="grid grid-cols-5 gap-2.5 bg-stone-950 p-3 rounded-xl border border-stone-800 text-center">
+                        <div onclick="addSticker('🦖')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🦖</div>
+                        <div onclick="addSticker('🦕')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🦕</div>
+                        <div onclick="addSticker('🐊')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🐊</div>
+                        <div onclick="addSticker('🌋')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🌋</div>
+                        <div onclick="addSticker('⚠️')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">⚠️</div>
+                        <div onclick="addSticker('🐾')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🐾</div>
+                        <div onclick="addSticker('🌿')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🌿</div>
+                        <div onclick="addSticker('🥩')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🥩</div>
+                        <div onclick="addSticker('🕵️')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🕵️</div>
+                        <div onclick="addSticker('🔥')" class="bg-stone-800 hover:bg-stone-700 p-2.5 rounded-lg text-2xl cursor-pointer select-none">🔥</div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button onclick="clearStickers()" class="flex-1 py-2.5 bg-stone-800 text-xs text-gray-300 font-bold rounded-lg border border-stone-700">스티커 전체 삭제</button>
+                    <button onclick="backToWorkspace()" class="flex-1 py-2.5 bg-stone-800 text-xs text-gray-300 font-bold rounded-lg border border-stone-700">이전 단계</button>
+                </div>
+            </div>
+
+            <!-- Right Interactive Sandbox Viewport -->
+            <div class="w-full lg:w-[360px] bg-stone-950 p-3 rounded-xl border border-stone-850 flex flex-col justify-between items-center">
+                <span class="text-[10px] text-gray-500 mb-2">원하는 대로 스티커를 움직여 배치해 주세요.</span>
+
+                <!-- Real-time design canvas with absolute overlays -->
+                <div class="relative bg-stone-900 rounded-lg p-1.5 flex justify-center w-full overflow-hidden">
+                    <div id="editable-sandbox-container" class="relative select-none" style="width: 260px; height: 610px;">
+                        <canvas id="render-deck-canvas" width="520" height="1220" class="w-full h-full pointer-events-none rounded"></canvas>
+                        <div id="stickers-container" class="absolute inset-0 z-40 overflow-hidden"></div>
+                    </div>
+                </div>
+
+                <button onclick="generateFinalImage()" class="w-full mt-3 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-extrabold text-sm rounded-xl transition-all">
+                    💾 최종 네컷 완성 및 인화하기
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: Final Stage (Gallery, Session Archive & High-res Export) -->
+        <section id="screen-result" class="hidden w-full max-w-3xl bg-stone-900 border border-amber-500/10 rounded-2xl p-5 shadow-2xl flex flex-col items-center">
+            
+            <div class="border-2 border-amber-500 px-4 py-1.5 rounded-lg bg-black text-amber-500 font-mono font-black text-xs md:text-sm tracking-wider mb-5">
+                🦖 PHOTO SECURED - INGEN SYSTEM DATABASE STAMP APPROVED 🦖
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 items-center w-full">
+                
+                <!-- Output display -->
+                <div class="flex-1 flex flex-col items-center">
+                    <div class="bg-stone-950 p-3 rounded-xl shadow-2xl border border-stone-800">
+                        <img id="final-fourcut-image" class="w-[230px] h-auto object-cover rounded" alt="최종 인생네컷">
+                    </div>
+                </div>
+
+                <!-- Right Action sidebar -->
+                <div class="flex-1 space-y-4 text-left w-full">
+                    <div>
+                        <h3 class="text-xl font-black text-amber-500">인화 성공!</h3>
+                        <p class="text-xs text-gray-300 mt-1">
+                            동아리 축제 인생네컷 인화가 완료되었습니다. 아래 저장 버튼을 통해 기기에 저장하세요!
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <button onclick="downloadFourcut()" class="w-full py-3.5 bg-gradient-to-r from-green-700 to-green-600 text-white font-extrabold text-sm rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-lg">
+                            <span>💾 이미지로 저장 (다운로드)</span>
+                        </button>
+                        <button onclick="restartPhotobooth()" class="w-full py-2.5 bg-stone-850 text-xs text-gray-300 font-bold rounded-lg border border-stone-800">
+                            🔄 새롭게 한 번 더 촬영하기
+                        </button>
+                    </div>
+
+                    <!-- Local Memory Session Gallery Album -->
+                    <div class="border-t border-stone-800 pt-3">
+                        <h4 class="text-[10px] font-mono font-bold text-gray-400 mb-2 uppercase tracking-widest">탐사 앨범 아카이브 (세션 저장 기록)</h4>
+                        <div id="gallery-scroller" class="flex gap-2 overflow-x-auto py-1">
+                            <span class="text-[11px] text-gray-600 font-mono italic">아직 보관된 사진이 없습니다.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Instructions Modal Popup -->
+    <div id="modal-howto" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-stone-900 border-2 border-amber-500 rounded-2xl max-w-md w-full p-6 text-stone-100">
+            <h3 class="text-xl font-bold text-amber-500 mb-4 flex items-center gap-2">🦕 쥬라기 네컷 이용 수칙</h3>
+            <ul class="space-y-3 text-sm text-gray-300 list-disc list-inside">
+                <li>카메라 장비 허용 버튼을 클릭하여 웹캠 화면을 연결합니다.</li>
+                <li>카메라가 없을 경우 공룡 테마의 <b>시뮬레이션 가상 스냅샷</b> 모드로 동작합니다.</li>
+                <li><b>네컷 연속 자동 촬영</b> 시작 버튼을 누르면 5초 카운트다운 후 연달아 4번을 자동 촬영합니다.</li>
+                <li>원하는 프레임(국방색, 카무플라주)을 자유롭게 변경합니다.</li>
+                <li>원하는 스티커를 클릭하여 보드 위에 얹고, 원하는 방향으로 드래그해 데코레이션 하세요!</li>
+                <li>마지막 단계에서 <b>다운로드</b>를 통해 이미지 파일로 저장할 수 있습니다.</li>
+            </ul>
+            <div class="mt-6 text-right">
+                <button onclick="toggleHowTo()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-xs transition-all">이해했습니다 🫡</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Footer Brand Info -->
+    <footer class="bg-stone-950 border-t border-stone-850 py-4 px-6 text-center text-[11px] text-gray-500 font-mono flex flex-col md:flex-row justify-between items-center gap-2">
+        <p>© 2026 INGEN PHOTO SYSTEMS. UNLEASH THE CRETACEOUS EXPERIENCE.</p>
+        <p class="text-amber-600">이 소프트웨어는 쥬라기 공원 테마를 차용한 웹캠 네컷사진 오마주 프로그램입니다.</p>
+    </footer>
+
+    <!-- Global App State Variables -->
+    <script>
+        let stream = null;
+        let isUsingVirtualCam = false;
+        let virtualCamInterval = null;
+        let countdownTimer = null;
+        
+        let capturedPhotos = []; // Saves 4 base64 images
+        let activeFilter = 'normal'; // 'normal', 'grayscale', 'sepia', 'jungle'
+        let selectedTheme = 'olive'; // Default: 'olive'
+        let stickersList = []; // Array of draggable stickers on the canvas
+        let finalGalleryImages = []; // Local memory session album
+        
+        let virtualAngle = 0;
+        const virtualCanvas = document.getElementById('virtual-cam-canvas');
+        const virtualCtx = virtualCanvas.getContext('2d');
+        
+        function showScreen(screenId) {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-workspace').classList.add('hidden');
+            document.getElementById('screen-decorator').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            
+            document.getElementById(screenId).classList.remove('hidden');
+            playSound('click');
+        }
+
+        function toggleHowTo() {
+            const modal = document.getElementById('modal-howto');
+            modal.classList.toggle('hidden');
+            playSound('click');
+        }
+    </script>
+
+    <!-- Camera Controller & Fallback Virtual Graphics Generator -->
+    <script>
+        async function startPhotobooth() {
+            showScreen('screen-workspace');
+            const promptEl = document.getElementById('camera-prompt');
+            
+            // Show initial loader status
+            promptEl.innerHTML = `
+                <span class="text-4xl mb-2 animate-bounce">📸</span>
+                <h4 class="text-sm font-bold text-amber-400 mb-1">카메라 승인 대기 중</h4>
+                <p class="text-[11px] text-gray-300 max-w-xs mb-4">브라우저 상단 또는 앱 내 허용 팝업이 나타나면 반드시 <b>'허용'</b>을 눌러주세요.</p>
+            `;
+            promptEl.classList.remove('hidden');
+            
+            try {
+                // Step 1: Highly compatible webcam/mobile camera query
+                const constraints = {
+                    video: { 
+                        facingMode: "user"
+                    },
+                    audio: false
+                };
+                
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (firstErr) {
+                    console.warn("Detailed video query failed, fallback to basic configuration.", firstErr);
+                    // Step 2: Fallback to simple unconstrained video grab
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                }
+                
+                const videoEl = document.getElementById('webcam-view');
+                videoEl.srcObject = stream;
+                videoEl.classList.remove('hidden');
+                
+                // Explicitly start playing the feed (Necessary for Safari/iOS & WebView context)
+                await new Promise((resolve) => {
+                    videoEl.onloadedmetadata = () => {
+                        videoEl.play()
+                            .then(resolve)
+                            .catch(playErr => {
+                                console.warn("Video autostart was blocked, resolving anyway.", playErr);
+                                resolve();
+                            });
+                    };
+                });
+                
+                // Toggle feed panels
+                virtualCanvas.classList.add('hidden');
+                promptEl.classList.add('hidden');
+                document.getElementById('rec-dot').classList.remove('hidden');
+                document.getElementById('camera-mode-tag').innerText = "REAL LIVE FEED";
+                document.getElementById('camera-mode-tag').className = "text-green-400 font-bold";
+                
+                isUsingVirtualCam = false;
+                if (virtualCamInterval) clearInterval(virtualCamInterval);
+                
+                setTimeout(() => playSound('roar'), 300);
+            } catch (err) {
+                console.error("Camera stream acquisition failed:", err);
+                
+                // INFORMATIVE TROUBLESHOOTING UI (No more silent fails!)
+                promptEl.innerHTML = `
+                    <span class="text-4xl mb-2">⚠️</span>
+                    <h4 class="text-sm font-bold text-red-500 mb-1.5">카메라 로드 권한 오류</h4>
+                    <p class="text-[11px] text-gray-300 max-w-xs mb-2 leading-relaxed">
+                        <b>원인:</b> 현재 실행 환경이 보안 프로토콜(HTTPS)이 아니거나, 플랫폼 Preview(아이프레임 Iframe) 보안 샌드박스 제한으로 인해 카메라가 비활성화되었습니다.
+                    </p>
+                    <p class="text-[10px] text-gray-400 max-w-xs mb-4 leading-relaxed">
+                        💡 <b>해결 방법:</b> 우측 상단의 <b>"새 창에서 보기(Open in New Tab)"</b>를 클릭하여 독립 브라우저 탭에서 실행하시면 카메라를 완벽하게 사용하실 수 있습니다!
+                    </p>
+                    <div class="flex gap-2">
+                        <button onclick="startPhotobooth()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs rounded transition-all">다시 연결 시도</button>
+                        <button onclick="enableVirtualCamera()" class="px-3 py-1.5 bg-stone-850 hover:bg-stone-800 text-amber-500 border border-amber-600/30 text-xs rounded transition-all">가상 카메라로 찍기</button>
+                    </div>
+                `;
+                promptEl.classList.remove('hidden');
+            }
+        }
+
+        function enableVirtualCamera() {
+            isUsingVirtualCam = true;
+            document.getElementById('camera-prompt').classList.add('hidden');
+            document.getElementById('webcam-view').classList.add('hidden');
+            virtualCanvas.classList.remove('hidden');
+            
+            document.getElementById('rec-dot').classList.remove('hidden');
+            document.getElementById('camera-mode-tag').innerText = "VIRTUAL MODE";
+            document.getElementById('camera-mode-tag').className = "text-yellow-400 font-bold";
+            
+            virtualCanvas.width = 640;
+            virtualCanvas.height = 480;
+            
+            if (virtualCamInterval) clearInterval(virtualCamInterval);
+            virtualCamInterval = setInterval(drawVirtualCameraFeed, 1000 / 25);
+            
+            setTimeout(() => playSound('roar'), 300);
+        }
+
+        function drawVirtualCameraFeed() {
+            if (!isUsingVirtualCam) return;
+            virtualAngle += 0.04;
+            
+            // Draw gradient background jungle dark green
+            const grad = virtualCtx.createRadialGradient(320, 240, 50, 320, 240, 420);
+            grad.addColorStop(0, '#102d16'); 
+            grad.addColorStop(1, '#030804'); 
+            virtualCtx.fillStyle = grad;
+            virtualCtx.fillRect(0, 0, 640, 480);
+            
+            // Cyber Grid lines
+            virtualCtx.strokeStyle = 'rgba(230, 120, 10, 0.08)';
+            virtualCtx.lineWidth = 1;
+            for (let i = 0; i < 640; i += 40) {
+                virtualCtx.beginPath();
+                virtualCtx.moveTo(i, 0);
+                virtualCtx.lineTo(i, 480);
+                virtualCtx.stroke();
+            }
+            for (let j = 0; j < 480; j += 40) {
+                virtualCtx.beginPath();
+                virtualCtx.moveTo(0, j);
+                virtualCtx.lineTo(640, j);
+                virtualCtx.stroke();
+            }
+
+            // Draw animated dinosaurs
+            const tRexX = 320 + Math.cos(virtualAngle) * 140;
+            const tRexY = 240 + Math.sin(virtualAngle * 2) * 50;
+            virtualCtx.fillStyle = 'rgba(235, 140, 20, 0.9)';
+            virtualCtx.font = 'bold 90px Inter';
+            virtualCtx.textAlign = 'center';
+            virtualCtx.textBaseline = 'middle';
+            virtualCtx.fillText('🦖', tRexX, tRexY);
+
+            const raptorX = 130 + Math.sin(virtualAngle) * 40;
+            virtualCtx.fillText('🦕', raptorX, 350);
+            
+            // Foliage outline
+            virtualCtx.fillStyle = 'rgba(12, 50, 20, 0.6)';
+            virtualCtx.font = '40px Inter';
+            virtualCtx.fillText('🌿', 50, 60);
+            virtualCtx.fillText('🌿', 590, 60);
+            virtualCtx.fillText('🌴', 60, 420);
+            virtualCtx.fillText('🌴', 580, 420);
+            
+            // Focus HUD box
+            virtualCtx.strokeStyle = '#e0a300';
+            virtualCtx.lineWidth = 2;
+            virtualCtx.strokeRect(320 - 60, 240 - 60, 120, 120);
+            
+            virtualCtx.fillStyle = '#f59e0b';
+            virtualCtx.font = '11px Courier New';
+            virtualCtx.fillText("TARGET: GIGANTOSAURUS MOVEMENTS DETECTED", 320, 440);
+        }
+    </script>
+
+    <script>
+        function triggerAutoSequence() {
+            playSound('click');
+            const btn = document.getElementById('btn-shoot-all');
+            btn.disabled = true;
+            btn.className = "flex-grow py-3.5 bg-gray-800 text-gray-500 font-extrabold text-base rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5";
+            
+            capturedPhotos = [];
+            resetPreviewHolders();
+            
+            let photoIndex = 0;
+            
+            function captureStep() {
+                if (photoIndex >= 4) {
+                    btn.disabled = false;
+                    btn.className = "flex-grow py-3.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold text-base rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 border-b-4 border-red-900";
+                    playSound('roar');
+                    
+                    const nextBtn = document.getElementById('btn-next-step');
+                    nextBtn.disabled = false;
+                    nextBtn.className = "w-full py-3.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-extrabold text-sm rounded-xl transition-all";
+                    return;
+                }
+                
+                let counter = 5;
+                const overlay = document.getElementById('countdown-overlay');
+                const overlayText = document.getElementById('countdown-text');
+                
+                overlay.classList.remove('hidden');
+                overlayText.innerText = counter;
+                playSound('beep');
+                
+                countdownTimer = setInterval(() => {
+                    counter--;
+                    if (counter > 0) {
+                        overlayText.innerText = counter;
+                        playSound('beep');
+                    } else {
+                        clearInterval(countdownTimer);
+                        overlay.classList.add('hidden');
+                        
+                        takeSingleSnapshot(photoIndex);
+                        photoIndex++;
+                        
+                        setTimeout(captureStep, 1500);
+                    }
+                }, 1000);
+            }
+            
+            captureStep();
+        }
+
+        function takeSingleSnapshot(index) {
+            playSound('shutter');
+            
+            const flash = document.getElementById('camera-flash');
+            flash.classList.add('flash-active');
+            setTimeout(() => flash.classList.remove('flash-active'), 500);
+            
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 640;
+            tempCanvas.height = 480;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            if (isUsingVirtualCam) {
+                tempCtx.drawImage(virtualCanvas, 0, 0);
+            } else {
+                const videoEl = document.getElementById('webcam-view');
+                const vW = videoEl.videoWidth || 640;
+                const vH = videoEl.videoHeight || 480;
+                
+                // Calculate 4:3 crop parameters from raw video dimensions
+                let sW, sH, sX, sY;
+                const targetRatio = 4 / 3;
+                const currentRatio = vW / vH;
+                
+                if (currentRatio > targetRatio) {
+                    sH = vH;
+                    sW = vH * targetRatio;
+                    sX = (vW - sW) / 2;
+                    sY = 0;
+                } else {
+                    sW = vW;
+                    sH = vW / targetRatio;
+                    sX = 0;
+                    sY = (vH - sH) / 2;
+                }
+                
+                tempCtx.translate(640, 0);
+                tempCtx.scale(-1, 1); // Reverse mirroring for natural selfie view
+                tempCtx.drawImage(videoEl, sX, sY, sW, sH, 0, 0, 640, 480);
+                tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+            }
+            
+            const photoDataUrl = tempCanvas.toDataURL('image/png');
+            capturedPhotos[index] = photoDataUrl;
+            
+            const previewImg = document.getElementById(`cut-preview-${index}`);
+            const placeholder = document.getElementById(`cut-placeholder-${index}`);
+            
+            previewImg.src = photoDataUrl;
+            previewImg.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
+
+        function resetPreviewHolders() {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`cut-preview-${i}`).classList.add('hidden');
+                document.getElementById(`cut-placeholder-${i}`).classList.remove('hidden');
+            }
+            const nextBtn = document.getElementById('btn-next-step');
+            nextBtn.disabled = true;
+            nextBtn.className = "w-full py-3.5 bg-gray-700 text-gray-400 font-extrabold text-sm rounded-xl transition-all cursor-not-allowed flex items-center justify-center gap-1.5";
+        }
+
+        function resetCapturedPhotos() {
+            playSound('click');
+            capturedPhotos = [];
+            resetPreviewHolders();
+        }
+    </script>
+
+    <script>
+        function drawBaseFrameDeck() {
+            const canvas = document.getElementById('render-deck-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, 520, 1220);
+            
+            // 1. Frame background selection
+            if (selectedTheme === 'olive') {
+                ctx.fillStyle = '#3a4430'; // Solid Olive Drab
+                ctx.fillRect(0, 0, 520, 1220);
+            } else if (selectedTheme === 'camo') {
+                // Procedural Military Camouflage design pattern
+                ctx.fillStyle = '#656c52'; // Base sage
+                ctx.fillRect(0, 0, 520, 1220);
+                
+                // Beautiful organic camo blobs
+                const spots = [
+                    {x: 50, y: 100, r: 80, color: '#3c422e'},
+                    {x: 400, y: 150, r: 90, color: '#2a2e1f'},
+                    {x: 200, y: 300, r: 120, color: '#888f70'},
+                    {x: 480, y: 500, r: 100, color: '#3c422e'},
+                    {x: 80, y: 700, r: 110, color: '#2a2e1f'},
+                    {x: 450, y: 850, r: 130, color: '#888f70'},
+                    {x: 150, y: 1050, r: 120, color: '#3c422e'},
+                    {x: 350, y: 1180, r: 90, color: '#2a2e1f'},
+                    {x: 260, y: 50, r: 70, color: '#2a2e1f'},
+                    {x: 20, y: 450, r: 85, color: '#888f70'},
+                    {x: 500, y: 280, r: 75, color: '#3c422e'},
+                    {x: 490, y: 980, r: 95, color: '#2a2e1f'},
+                    {x: 30, y: 900, r: 105, color: '#888f70'},
+                    {x: 280, y: 650, r: 80, color: '#3c422e'}
+                ];
+                
+                spots.forEach(s => {
+                    ctx.fillStyle = s.color;
+                    ctx.beginPath();
+                    // Interlapping arcs to make organic-shaped spots
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.arc(s.x - s.r/3, s.y + s.r/4, s.r * 0.7, 0, Math.PI * 2);
+                    ctx.arc(s.x + s.r/2, s.y - s.r/3, s.r * 0.6, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            // Outer borders
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(5, 5, 510, 1210);
+
+            // Photo cuts positioning
+            const yOffsetStart = 50;
+            const photoSpacing = 250;
+            const photoWidth = 440;
+            const photoHeight = 230;
+            const xOffset = 40;
+
+            for (let i = 0; i < 4; i++) {
+                const img = new Image();
+                img.src = capturedPhotos[i];
+                
+                const filterCanvas = document.createElement('canvas');
+                filterCanvas.width = 640;
+                filterCanvas.height = 480;
+                const filterCtx = filterCanvas.getContext('2d');
+                filterCtx.drawImage(img, 0, 0);
+
+                // Pixel filter algorithms
+                if (activeFilter === 'grayscale') {
+                    const imgData = filterCtx.getImageData(0, 0, 640, 480);
+                    const data = imgData.data;
+                    for (let x = 0; x < data.length; x += 4) {
+                        const brightness = 0.3 * data[x] + 0.59 * data[x + 1] + 0.11 * data[x + 2];
+                        data[x] = brightness; data[x+1] = brightness; data[x+2] = brightness;
+                    }
+                    filterCtx.putImageData(imgData, 0, 0);
+                } else if (activeFilter === 'sepia') {
+                    const imgData = filterCtx.getImageData(0, 0, 640, 480);
+                    const data = imgData.data;
+                    for (let x = 0; x < data.length; x += 4) {
+                        const r = data[x], g = data[x + 1], b = data[x + 2];
+                        data[x] = (r * 0.393) + (g * 0.769) + (b * 0.189);
+                        data[x+1] = (r * 0.349) + (g * 0.686) + (b * 0.168);
+                        data[x+2] = (r * 0.272) + (g * 0.534) + (b * 0.131);
+                    }
+                    filterCtx.putImageData(imgData, 0, 0);
+                } else if (activeFilter === 'jungle') {
+                    const imgData = filterCtx.getImageData(0, 0, 640, 480);
+                    const data = imgData.data;
+                    for (let x = 0; x < data.length; x += 4) {
+                        data[x] = data[x] * 0.4;
+                        data[x+1] = data[x+1] * 1.15;
+                        data[x+2] = data[x+2] * 0.5;
+                    }
+                    filterCtx.putImageData(imgData, 0, 0);
+                }
+
+                const currentY = yOffsetStart + (i * photoSpacing);
+                ctx.drawImage(filterCanvas, xOffset, currentY, photoWidth, photoHeight);
+
+                ctx.strokeStyle = '#232525';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(xOffset, currentY, photoWidth, photoHeight);
+            }
+
+            // Draw embedded dinosaur characters and design stamps
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.font = '36px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Flying pterodactyl at top sky
+            ctx.fillText('🦕', 465, 30);
+            
+            // Tyrannosaurus peeking at bottom margins
+            ctx.font = '50px Arial';
+            ctx.fillText('🦖', 40, 1100);
+
+            // Footprints sequence down margins
+            ctx.font = '20px Arial';
+            ctx.fillStyle = 'rgba(253, 186, 116, 0.4)';
+            ctx.fillText('🐾', 18, 200);
+            ctx.fillText('🐾', 24, 380);
+            ctx.fillText('🐾', 18, 560);
+            ctx.fillText('🐾', 22, 850);
+            ctx.fillText('🐾', 500, 400);
+            ctx.fillText('🐾', 496, 700);
+
+            // 5. Deck Branding Footer Title (Fixed requested branding)
+            const footerY = 1120;
+            ctx.textAlign = 'center';
+
+            ctx.fillStyle = '#f59e0b'; // Premium Gold
+            ctx.font = 'bold 36px "Black Han Sans", "Arial", sans-serif';
+            ctx.fillText('세계 공룡의 날 🦖', 260, footerY);
+            
+            ctx.fillStyle = '#f3f4f6'; // Clean White/Gray
+            ctx.font = '600 18px "Inter", sans-serif';
+            ctx.fillText('한들중 과학 자율동아리', 260, footerY + 36);
+        }
+
+        function selectFrameTheme(themeKey) {
+            selectedTheme = themeKey;
+            playSound('click');
+            
+            document.querySelectorAll('.frame-tab').forEach(el => {
+                el.className = "frame-tab border border-stone-800 bg-stone-950 text-gray-400 text-sm py-2.5 rounded-lg text-center";
+            });
+            
+            const targetBtn = document.getElementById(`btn-frame-${themeKey}`);
+            if (targetBtn) {
+                targetBtn.className = "frame-tab border-2 border-amber-500 bg-amber-950/20 text-white text-sm py-2.5 rounded-lg text-center font-bold";
+            }
+            
+            const framePreview = document.getElementById('fourcut-frame-preview');
+            
+            // Reset styles
+            framePreview.style.backgroundImage = 'none';
+            
+            if (themeKey === 'olive') {
+                framePreview.style.backgroundColor = "#3a4430";
+                framePreview.style.color = "#f59e0b";
+                framePreview.style.borderColor = "#242c1e";
+            } else if (themeKey === 'camo') {
+                framePreview.style.backgroundColor = "#656c52";
+                framePreview.style.color = "#ffffff";
+                framePreview.style.borderColor = "#3c422e";
+                // Preview Camouflage CSS design approximation
+                framePreview.style.backgroundImage = "radial-gradient(circle at 20% 30%, #3c422e 25%, transparent 25%), radial-gradient(circle at 75% 60%, #2a2e1f 30%, transparent 30%), radial-gradient(circle at 40% 80%, #888f70 20%, transparent 20%)";
+            }
+        }
+
+        function applyPhotoFilter(filterKey) {
+            activeFilter = filterKey;
+            playSound('click');
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn bg-stone-950 text-xs py-2 rounded-lg border border-stone-800 text-gray-400";
+            });
+            event.target.className = "filter-btn bg-stone-800 text-xs py-2 rounded-lg border-2 border-amber-500 text-amber-500 font-bold";
+
+            drawBaseFrameDeck();
+        }
+    </script>
+
+    <script>
+        function addSticker(emoji) {
+            playSound('click');
+            
+            const container = document.getElementById('stickers-container');
+            const stickerId = 'sticker-' + Date.now();
+            
+            const el = document.createElement('div');
+            el.id = stickerId;
+            el.className = "sticker-item absolute cursor-move select-none text-3xl p-2 active:scale-125 transition-transform flex items-center justify-center";
+            el.style.left = "110px";
+            el.style.top = "250px";
+            el.style.zIndex = "50";
+            el.innerText = emoji;
+            
+            const stickerObj = {
+                id: stickerId,
+                emoji: emoji,
+                x: 110,
+                y: 250
+            };
+            stickersList.push(stickerObj);
+
+            makeElementDraggable(el, stickerObj);
+            container.appendChild(el);
+        }
+
+        function makeElementDraggable(element, stickerObj) {
+            let active = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = stickerObj.x;
+            let yOffset = stickerObj.y;
+
+            const container = document.getElementById('editable-sandbox-container');
+
+            element.addEventListener("touchstart", dragStart, { passive: false });
+            element.addEventListener("touchend", dragEnd, { passive: false });
+            element.addEventListener("touchmove", drag, { passive: false });
+
+            element.addEventListener("mousedown", dragStart, false);
+            element.addEventListener("mouseup", dragEnd, false);
+            element.addEventListener("mousemove", drag, false);
+
+            function dragStart(e) {
+                if (e.type === "touchstart") {
+                    initialX = e.touches[0].clientX - xOffset;
+                    initialY = e.touches[0].clientY - yOffset;
+                } else {
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                }
+
+                if (e.target === element) {
+                    active = true;
+                }
+            }
+
+            function dragEnd() {
+                initialX = currentX;
+                initialY = currentY;
+                active = false;
+            }
+
+            function drag(e) {
+                if (active) {
+                    e.preventDefault(); // Lock mobile screen scrolling during drags
+                
+                    if (e.type === "touchmove") {
+                        currentX = e.touches[0].clientX - initialX;
+                        currentY = e.touches[0].clientY - initialY;
+                    } else {
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+                    }
+
+                    const limitX = container.clientWidth - element.clientWidth;
+                    const limitY = container.clientHeight - element.clientHeight;
+
+                    if (currentX < 0) currentX = 0;
+                    if (currentX > limitX) currentX = limitX;
+                    if (currentY < 0) currentY = 0;
+                    if (currentY > limitY) currentY = limitY;
+
+                    xOffset = currentX;
+                    yOffset = currentY;
+
+                    element.style.left = currentX + "px";
+                    element.style.top = currentY + "px";
+
+                    stickerObj.x = currentX;
+                    stickerObj.y = currentY;
+                }
+            }
+        }
+
+        function clearStickers() {
+            playSound('click');
+            document.getElementById('stickers-container').innerHTML = '';
+            stickersList = [];
+        }
+
+        function backToWorkspace() {
+            showScreen('screen-workspace');
+        }
+
+        function goToDecorator() {
+            if (capturedPhotos.length < 4) return;
+            showScreen('screen-decorator');
+            drawBaseFrameDeck();
+        }
+    </script>
+
+    <script>
+        function generateFinalImage() {
+            playSound('roar');
+            
+            const baseCanvas = document.getElementById('render-deck-canvas');
+            const finalCanvas = document.createElement('canvas');
+            
+            // Base 520x1220 pixels upscales 2x to 1040x2440 high-resolution print standard
+            finalCanvas.width = 1040;
+            finalCanvas.height = 2440;
+            const finalCtx = finalCanvas.getContext('2d');
+            
+            finalCtx.drawImage(baseCanvas, 0, 0, 1040, 2440);
+            
+            const scaleFactor = 2.0;
+            finalCtx.font = "70px Arial";
+            finalCtx.textAlign = 'center';
+            finalCtx.textBaseline = 'middle';
+            
+            stickersList.forEach(sticker => {
+                const drawX = (sticker.x + 20) * scaleFactor;
+                const drawY = (sticker.y + 20) * scaleFactor;
+                finalCtx.fillText(sticker.emoji, drawX, drawY);
+            });
+            
+            const finalDataUrl = finalCanvas.toDataURL('image/png');
+            document.getElementById('final-fourcut-image').src = finalDataUrl;
+            
+            addToLocalAlbumArchive(finalDataUrl);
+            showScreen('screen-result');
+        }
+
+        function downloadFourcut() {
+            playSound('click');
+            const imageSrc = document.getElementById('final-fourcut-image').src;
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = imageSrc;
+            downloadLink.download = `JURASSIC_BOOTH_${Date.now()}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        function addToLocalAlbumArchive(imageDataUrl) {
+            const container = document.getElementById('gallery-scroller');
+            
+            if (finalGalleryImages.length === 0) {
+                container.innerHTML = '';
+            }
+            finalGalleryImages.push(imageDataUrl);
+            
+            const div = document.createElement('div');
+            div.className = "flex-shrink-0 w-16 h-36 bg-stone-950 p-1 border border-stone-800 rounded cursor-pointer relative";
+            div.onclick = () => {
+                document.getElementById('final-fourcut-image').src = imageDataUrl;
+                playSound('click');
+            };
+            
+            const img = document.createElement('img');
+            img.src = imageDataUrl;
+            img.className = "w-full h-full object-cover rounded";
+            
+            div.appendChild(img);
+            container.appendChild(div);
+        }
+
+        function restartPhotobooth() {
+            playSound('click');
+            capturedPhotos = [];
+            stickersList = [];
+            document.getElementById('stickers-container').innerHTML = '';
+            resetPreviewHolders();
+            showScreen('screen-workspace');
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JURASSIC PHOTOBOOTH - 쥬라기 네컷</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Inter:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', 'Black Han Sans', sans-serif;
+            background-color: #0b130a; /* Deep Jungle Black */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom scrollbar for gallery */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1e11;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c29913;
+            border-radius: 4px;
+        }
+        
+        /* Danger hazard stripes animation */
+        .hazard-stripes {
+            background: repeating-linear-gradient(
+                -45deg,
+                #fcd34d,
+                #fcd34d 15px,
+                #1e1b4b 15px,
+                #1e1b4b 30px
+            );
+        }
+
+        /* Pulse animation for active record */
+        .pulse-red {
+            animation: pulse-red-anim 1.5s infinite;
+        }
+        @keyframes pulse-red-anim {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.4; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Shutter flash */
+        .flash-active {
+            animation: flash-anim 0.5s ease-out forwards;
+        }
+        @keyframes flash-anim {
+            0% { opacity: 0; }
+            20% { opacity: 1; background: white; }
+            100% { opacity: 0; }
+        }
+
+        /* Mirror video feed for natural selfie look */
+        .mirror-x {
+            transform: scaleX(-1);
+        }
+
+        /* Sticker touch safety for mobile */
+        .sticker-item {
+            touch-action: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'beep') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'shutter') {
+                const bufferSize = audioCtx.sampleRate * 0.2;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                
+                const noiseFilter = audioCtx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.value = 1000;
+
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(audioCtx.destination);
+                noise.start();
+            } else if (type === 'roar') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(90, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(45, audioCtx.currentTime + 1.2);
+                
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(200, audioCtx.currentTime);
+                filter.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 1.2);
+
+                const growlGain = audioCtx.createGain();
+                growlGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                growlGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+
+                osc.connect(filter);
+                filter.connect(growlGain);
+                growlGain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.5);
+            } else if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(330, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            }
+        }
+    </script>
+
+    <!-- Top Danger Alert Bar -->
+    <div class="hazard-stripes h-3 w-full shadow-inner"></div>
+    
+    <!-- Navigation Header -->
+    <header class="bg-stone-900 border-b-2 border-amber-500 py-3 px-4 md:px-6 flex justify-between items-center shadow-lg relative z-20">
+        <div class="flex items-center space-x-2 md:space-x-3">
+            <svg class="w-7 h-7 text-amber-500 fill-current animate-bounce" viewBox="0 0 512 512">
+                <path d="M496 384c0 13.3-10.7 24-24 24H334.6c-1.3-4.5-3.3-8.8-5.8-12.7L298 347.1c-14-21.9-38-35.1-63.9-35.1h-4.2l34.6-69.3c5-9.9 2.5-22.1-5.9-29.2L192 159.2V96c0-17.7-14.3-32-32-32H96C78.3 64 64 78.3 64 96v256c0 17.7 14.3 32 32 32h352c13.3 0 24 10.7 24 24s-10.7 24-24 24H96c-44.2 0-80-35.8-80-80V96C16 43.8 57.8 1.6 110.1.1c29.1-.8 57.4 9.6 79 29.1L239.5 76c24.5 22 56.4 34 89.4 34H416c44.2 0 80 35.8 80 80v194z"/>
+            </svg>
+            <div>
+                <h1 class="font-extrabold text-base md:text-xl tracking-wider text-amber-500 uppercase flex items-center gap-1.5">
+                    JURASSIC <span class="text-white text-[10px] md:text-xs bg-red-600 px-1.5 py-0.5 rounded animate-pulse">MOBILE LIVE</span>
+                </h1>
+                <p class="text-[9px] text-gray-400 font-mono">AUTHORIZED EXPLORER ONLY - INGEN PHOTO DEPT.</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <span id="system-status" class="hidden sm:flex items-center text-xs text-green-400 font-mono bg-green-950/50 border border-green-500/30 px-2.5 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 pulse-red"></span> LIVE CAM
+            </span>
+            <button onclick="toggleHowTo()" class="text-xs font-mono text-amber-500 hover:text-amber-400 underline cursor-pointer">이용 방법</button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Section -->
+    <main class="flex-grow flex flex-col items-center justify-center p-3 md:p-6 max-w-7xl mx-auto w-full relative">
+        
+        <!-- SCREEN 1: Welcome Screen -->
+        <section id="screen-welcome" class="w-full max-w-xl bg-stone-900 border border-amber-600/30 rounded-2xl p-6 md:p-8 text-center shadow-2xl relative overflow-hidden flex flex-col items-center">
+            <div class="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#f1c40f_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            
+            <div class="relative z-10 w-full">
+                <div class="inline-block border-2 border-yellow-500 px-4 py-2.5 rounded-lg bg-black text-yellow-500 font-mono font-black text-lg md:text-xl tracking-widest mb-6 uppercase shadow-lg">
+                    ⚠️ ALERT ⚠️<br>
+                    <span class="text-[10px] text-white tracking-normal font-normal block mt-1">CAMERA ACCESS REQUIRED FOR ISLA NUBLAR ID</span>
+                </div>
+
+                <div class="w-36 h-36 mx-auto mb-6 bg-stone-950/50 border border-stone-800 rounded-full flex items-center justify-center">
+                    <span class="text-7xl animate-pulse select-none">🦖</span>
+                </div>
+
                 <h2 class="text-2xl md:text-3xl font-extrabold text-amber-400 uppercase tracking-tight mb-2">쥬라기 네컷 (모바일 호환)</h2>
                 <p class="text-gray-300 text-xs md:text-sm max-w-sm mx-auto mb-6 leading-relaxed">
                     공룡들이 날뛰는 야생 구역입니다. 스마트폰이나 PC 카메라를 활성화하여 멋진 스냅샷을 촬영하고 공원 전용 앨범 이미지를 인화해 보세요!
