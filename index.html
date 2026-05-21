@@ -7,7 +7,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Inter:wght@300;400;700;900&display=swap');
         
         body {
             font-family: 'Inter', 'Black Han Sans', sans-serif;
@@ -258,15 +258,16 @@
                     </button>
                 </div>
 
-                <!-- Frame Palette Custom Selection (#000000, #121212, #5D583E, #74BDEB, #FA8EE5) -->
+                <!-- Frame Palette Custom Selection (#000000, #827717, #273238, #BF350C, #45556C, #8E0054) -->
                 <div class="mt-4 border-t border-stone-800/60 pt-3">
-                    <label class="block text-[11px] font-bold text-amber-500 mb-2 uppercase tracking-wide">CHOOSE FRAME COLOR (5가지 전용 색상)</label>
+                    <label class="block text-[11px] font-bold text-amber-500 mb-2 uppercase tracking-wide">CHOOSE FRAME COLOR (6가지 전용 색상)</label>
                     <div class="flex flex-wrap gap-3">
                         <button onclick="selectFrameTheme('#000000')" id="btn-color-000000" class="color-dot w-9 h-9 rounded-full bg-black border-2 border-amber-500 relative transition-transform hover:scale-110 active:scale-95" title="Black"></button>
-                        <button onclick="selectFrameTheme('#121212')" id="btn-color-121212" class="color-dot w-9 h-9 rounded-full bg-[#121212] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Dark Gray"></button>
-                        <button onclick="selectFrameTheme('#5D583E')" id="btn-color-5D583E" class="color-dot w-9 h-9 rounded-full bg-[#5D583E] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Dino Earth"></button>
-                        <button onclick="selectFrameTheme('#74BDEB')" id="btn-color-74BDEB" class="color-dot w-9 h-9 rounded-full bg-[#74BDEB] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Sky Blue"></button>
-                        <button onclick="selectFrameTheme('#FA8EE5')" id="btn-color-FA8EE5" class="color-dot w-9 h-9 rounded-full bg-[#FA8EE5] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Lovely Pink"></button>
+                        <button onclick="selectFrameTheme('#827717')" id="btn-color-827717" class="color-dot w-9 h-9 rounded-full bg-[#827717] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Olive Green"></button>
+                        <button onclick="selectFrameTheme('#273238')" id="btn-color-273238" class="color-dot w-9 h-9 rounded-full bg-[#273238] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Slate Gray"></button>
+                        <button onclick="selectFrameTheme('#BF350C')" id="btn-color-BF350C" class="color-dot w-9 h-9 rounded-full bg-[#BF350C] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Rust Orange"></button>
+                        <button onclick="selectFrameTheme('#45556C')" id="btn-color-45556C" class="color-dot w-9 h-9 rounded-full bg-[#45556C] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Slate Blue"></button>
+                        <button onclick="selectFrameTheme('#8E0054')" id="btn-color-8E0054" class="color-dot w-9 h-9 rounded-full bg-[#8E0054] border border-stone-700 relative transition-transform hover:scale-110 active:scale-95" title="Deep Magenta"></button>
                     </div>
                 </div>
             </div>
@@ -305,10 +306,10 @@
                                 </div>
                             </div>
 
-                            <!-- Styled bottom logo - Fixed as "세계 공룡의 날🦖" and Subtitle -->
+                            <!-- Styled bottom logo - Fixed as "🦖6.1. 세계 공룡의 날🦖" and Subtitle (font-light) -->
                             <div class="mt-3 text-center border-t border-stone-800/60 pt-2 flex flex-col items-center">
-                                <span id="theme-footer-title" class="font-extrabold text-sm tracking-wider text-amber-500 font-[Black Han Sans] whitespace-nowrap">세계 공룡의 날 🦖</span>
-                                <span id="theme-footer-sub" class="text-[9px] font-medium text-gray-300 mt-0.5 whitespace-nowrap">한들중 과학 자율동아리</span>
+                                <span id="theme-footer-title" class="font-extrabold text-[12px] tracking-wider text-amber-500 font-[Black Han Sans] whitespace-nowrap">🦖6.1. 세계 공룡의 날🦖</span>
+                                <span id="theme-footer-sub" class="text-[8.5px] font-light text-gray-300 mt-1.5 tracking-wide whitespace-nowrap">한들중 과학 자율동아리</span>
                             </div>
                         </div>
                     </div>
@@ -784,11 +785,7 @@
             ctx.fillRect(0, 0, 520, 1220);
 
             // 2. 테두리 외곽선 라인 (어두운 배경과 밝은 배경 가독성 경계선 처리)
-            if (selectedColor === '#FA8EE5' || selectedColor === '#74BDEB') {
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
-            } else {
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            }
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
             ctx.lineWidth = 10;
             ctx.strokeRect(5, 5, 510, 1210);
 
@@ -851,12 +848,7 @@
             }
 
             // 4. 프레임용 탑재 공룡 캐릭터 그래픽 합성
-            // 어두운 배경일 경우 흰색, 밝은 배경일 경우 짙은 에메랄드 먹색으로 조정
-            if (selectedColor === '#FA8EE5' || selectedColor === '#74BDEB') {
-                ctx.fillStyle = '#0f172a';
-            } else {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            }
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
             
             ctx.font = '36px Arial';
             ctx.textAlign = 'center';
@@ -871,11 +863,7 @@
 
             // 여백 마진을 장식하는 귀여운 발자국 체인
             ctx.font = '20px Arial';
-            if (selectedColor === '#FA8EE5' || selectedColor === '#74BDEB') {
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
-            } else {
-                ctx.fillStyle = 'rgba(253, 186, 116, 0.4)';
-            }
+            ctx.fillStyle = 'rgba(253, 186, 116, 0.4)';
             ctx.fillText('🐾', 18, 200);
             ctx.fillText('🐾', 24, 380);
             ctx.fillText('🐾', 18, 560);
@@ -883,26 +871,18 @@
             ctx.fillText('🐾', 500, 400);
             ctx.fillText('🐾', 496, 700);
 
-            // 5. 요청 고정 브랜드 레이블 합성 연산 (세계 공룡의 날 🦖 & 한들중 과학 자율동아리)
+            // 5. 요청 고정 브랜드 레이블 합성 연산 (🦖6.1. 세계 공룡의 날🦖 & 한들중 과학 자율동아리)
             const footerY = 1115;
             ctx.textAlign = 'center';
 
-            // 타이틀 "세계 공룡의 날 🦖"
-            if (selectedColor === '#FA8EE5' || selectedColor === '#74BDEB') {
-                ctx.fillStyle = '#0f172a'; // 고가독성 어두운 계열 색상
-            } else {
-                ctx.fillStyle = '#f59e0b'; // 골드 오렌지 색상
-            }
-            ctx.font = 'bold 36px "Black Han Sans", "Arial", sans-serif';
-            ctx.fillText('세계 공룡의 날 🦖', 260, footerY);
+            // 타이틀 "🦖6.1. 세계 공룡의 날🦖"
+            ctx.fillStyle = '#f59e0b'; // 골드 오렌지 색상
+            ctx.font = 'bold 32px "Black Han Sans", "Arial", sans-serif';
+            ctx.fillText('🦖6.1. 세계 공룡의 날🦖', 260, footerY);
             
-            // 서브타이틀 "한들중 과학 자율동아리"
-            if (selectedColor === '#FA8EE5' || selectedColor === '#74BDEB') {
-                ctx.fillStyle = '#334155';
-            } else {
-                ctx.fillStyle = '#f3f4f6';
-            }
-            ctx.font = '600 18px "Inter", sans-serif';
+            // 서브타이틀 "한들중 과학 자율동아리" (가늘고 작은 서체: font-light 300)
+            ctx.fillStyle = '#d1d5db';
+            ctx.font = '300 16px "Inter", sans-serif';
             ctx.fillText('한들중 과학 자율동아리', 260, footerY + 38);
         }
 
@@ -932,16 +912,10 @@
             
             framePreview.style.backgroundColor = hexColor;
             
-            // 텍스트 대비 계산 조절
-            if (hexColor === '#FA8EE5' || hexColor === '#74BDEB') {
-                framePreview.style.borderColor = "#475569";
-                previewTitle.style.color = "#0f172a";
-                previewSub.style.color = "#334155";
-            } else {
-                framePreview.style.borderColor = "#1e293b";
-                previewTitle.style.color = "#f59e0b";
-                previewSub.style.color = "#e2e8f0";
-            }
+            // 프리뷰 텍스트는 일관되게 골드/밝은회색 테마 적용
+            framePreview.style.borderColor = "#1e293b";
+            previewTitle.style.color = "#f59e0b";
+            previewSub.style.color = "#e2e8f0";
         }
 
         function applyPhotoFilter(filterKey) {
